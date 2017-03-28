@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.MaxCardinalityRestriction;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -26,7 +26,7 @@ public class CreateModel {
 
 	//ontologyName=args[0];
         baseNs = ontologiesBase + ontologyName + "#";
-        ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RULE_INF);
         BasicConfigurator.configure();
 
         OntClass Province = ontology.createClass(baseNs + "Province");
@@ -37,18 +37,63 @@ public class CreateModel {
         OntClass CountyBoundary = ontology.createClass(baseNs + "CountyBoundary");
         OntClass CrimeType = ontology.createClass(baseNs + "CrimeType");
         OntClass CrimeSeverity = ontology.createClass(baseNs + "CrimeSeverity");
-        
-
-//        Dog.addDisjointWith(Cat);
-        
+       
         OntProperty  containedIn =  ontology.createObjectProperty(baseNs + "containedIn");
         OntProperty  contains =  ontology.createObjectProperty(baseNs + "contains");
         contains.setInverseOf(containedIn);
         contains.addDomain(Province);
         contains.addRange(Division);
+        containedIn.addDomain(Division);
+        containedIn.addRange(Province);
+       
+        contains.addDomain(Division);
+        contains.addRange(County);
+        containedIn.addDomain(County);
+        containedIn.addRange(Division);
+       
+        OntProperty geometry =  ontology.createObjectProperty(baseNs + "geometry");
+        geometry.addDomain(County);
+        geometry.addRange(CountyBoundary);
+       
+        OntProperty coords = ontology.createObjectProperty(baseNs + "coords");
+        coords.addDomain(CountyBoundary);
+        coords.addLiteral(coords, 0.0);
+       
+        contains.addDomain(County);
+        contains.addRange(GardaStation);
+        containedIn.addDomain(GardaStation);
+        containedIn.addRange(County);
+       
+        OntProperty hasOccurred = ontology.createObjectProperty(baseNs + "hasOccurred");
+        hasOccurred.addDomain(GardaStation);
+        hasOccurred.addRange(Crime);
+       
         
-        OntClass provinceRestriction = ontology.createCardinalityQRestriction(null, containedIn,1 ,Province);
-        Province.addSuperClass(provinceRestriction);
+//        OntClass provinceRestriction = ontology.createCardinalityRestriction(null, contains,1);
+//        Province.addSuperClass(provinceRestriction);
+        
+        
+        long crimeNumber = 0;
+        OntProperty  hasNumber =  ontology.createObjectProperty(baseNs + "hasNumber");
+        hasNumber.addDomain(Crime);
+        hasNumber.addLiteral(hasNumber, crimeNumber);
+
+        OntProperty  hasCrimeDetails =  ontology.createObjectProperty(baseNs + "hasCrimeDetails");
+        hasCrimeDetails.addDomain(Crime);
+        hasCrimeDetails.addRange(CrimeType);
+        
+        OntProperty  hasType =  ontology.createObjectProperty(baseNs + "hasType");
+        hasType.addDomain(CrimeType);
+        hasType.addLiteral(hasType, "");
+        
+        OntProperty  hasSeverity =  ontology.createObjectProperty(baseNs + "hasSeverity");
+        hasSeverity.addDomain(CrimeType);
+        hasSeverity.addRange(CrimeSeverity);
+        
+        OntProperty  is =  ontology.createObjectProperty(baseNs + "is");
+        is.addDomain(CrimeSeverity);
+        is.addLiteral(is, "");
+        
        
 ////       
 //        OntProperty  chasedby =  ontology.createObjectProperty(baseNs + "chased_by");
@@ -71,14 +116,14 @@ public class CreateModel {
             e.printStackTrace();
         }
 
-        try 
-        {
-			ReadModel.loadAllClassesOnt(ontologyName);
-		} 
-        catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		}
+//        try 
+//        {
+//			ReadModel.loadAllClassesOnt(ontologyName);
+//		} 
+//        catch (FileNotFoundException e) 
+//		{
+//			e.printStackTrace();
+//		}
 
     }
 
