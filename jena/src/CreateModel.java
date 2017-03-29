@@ -34,8 +34,6 @@ public class CreateModel {
         ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RULE_INF);
         BasicConfigurator.configure();
 
-        OntClass Province = ontology.createClass(baseNs + "Province");
-        OntClass Division = ontology.createClass(baseNs + "Division");
         OntClass County= ontology.createClass(baseNs + "County");
         OntClass GardaStation = ontology.createClass(baseNs + "GardaStation");
         OntClass Crime = ontology.createClass(baseNs + "Crime");
@@ -55,6 +53,9 @@ public class CreateModel {
         OntClass PublicOrderOffences = ontology.createClass(baseNs + "PublicOrderOffences");
         OntClass GovernmentOffences = ontology.createClass(baseNs + "GovernmentOffences");
         
+        OntClass LowSeverity = ontology.createClass(baseNs + "LowSeverity");
+        OntClass HighSeverity = ontology.createClass(baseNs + "HighSeverity");
+        
         OntProperty  containedIn =  ontology.createObjectProperty(baseNs + "containedIn");
         OntProperty  contains =  ontology.createObjectProperty(baseNs + "contains");
         OntProperty geometry =  ontology.createObjectProperty(baseNs + "geometry");
@@ -66,7 +67,9 @@ public class CreateModel {
         OntProperty  hasX =  ontology.createObjectProperty(baseNs + "hasX");
         OntProperty  hasY =  ontology.createObjectProperty(baseNs + "hasY");
         OntProperty hasCrime = ontology.createObjectProperty(baseNs + "hasCrime");
-        //TODO domain range for hascrime
+        
+        CrimeSeverity.addSubClass(HighSeverity);
+        CrimeSeverity.addSubClass(LowSeverity);
         
         Crime.addSubClass(Assaults);
         Crime.addSubClass(DangerousActs);
@@ -81,43 +84,16 @@ public class CreateModel {
         Crime.addSubClass(PublicOrderOffences);
         Crime.addSubClass(GovernmentOffences);
         
-        hasSeverity.addDomain(Assaults);
-        hasSeverity.addDomain(DangerousActs);
-        hasSeverity.addDomain(Kidnapping);
-        hasSeverity.addDomain(Robbery);
-        hasSeverity.addDomain(Burglary);
-        hasSeverity.addDomain(Theft);
-        hasSeverity.addDomain(Fraud);
-        hasSeverity.addDomain(Drugs);
-        hasSeverity.addDomain(Weapons);
-        hasSeverity.addDomain(DamagedProperty);
-        hasSeverity.addDomain(PublicOrderOffences);
-        hasSeverity.addDomain(GovernmentOffences);
+        hasSeverity.addDomain(Crime);
         
-        hasNumber.addDomain(Assaults);
-        hasNumber.addDomain(DangerousActs);
-        hasNumber.addDomain(Kidnapping);
-        hasNumber.addDomain(Robbery);
-        hasNumber.addDomain(Burglary);
-        hasNumber.addDomain(Theft);
-        hasNumber.addDomain(Fraud);
-        hasNumber.addDomain(Drugs);
-        hasNumber.addDomain(Weapons);
-        hasNumber.addDomain(DamagedProperty);
-        hasNumber.addDomain(PublicOrderOffences);
-        hasNumber.addDomain(GovernmentOffences);
-       
+        hasNumber.addDomain(Crime);
 
         contains.setInverseOf(containedIn);
-        contains.addDomain(Province);
-        contains.addRange(Division);
-        containedIn.addDomain(Division);
-        containedIn.addRange(Province);
        
-        contains.addDomain(Division);
+
         contains.addRange(County);
         containedIn.addDomain(County);
-        containedIn.addRange(Division);
+        
        
         
         geometry.addDomain(County);
@@ -153,8 +129,9 @@ public class CreateModel {
       
        while((line = reader.readLine()) != null){
     	   String[] lineSplit = line.split(",");
+    	   lineSplit[0] = lineSplit[0].replace(" ", "");
     	   Individual station = ontology.createIndividual(baseNs+lineSplit[0],GardaStation);
-    	   Individual division = ontology.createIndividual(baseNs + lineSplit[1],Division);
+  
     	   station.addProperty(hasX, lineSplit[2]);
     	   station.addProperty(hasY, lineSplit[3]);
     	   Individual cr = ontology.createIndividual(baseNs+lineSplit[0]+"Assaults", Assaults);
@@ -165,7 +142,45 @@ public class CreateModel {
     	   danger.addProperty(hasNumber, lineSplit[5]);
     	   station.addProperty(hasCrime, danger);
     	   
+    	   Individual kidnapping = ontology.createIndividual(baseNs+lineSplit[0]+"Kidnapping", Kidnapping);
+    	   kidnapping.addProperty(hasNumber, lineSplit[6]);
+    	   station.addProperty(hasCrime, kidnapping);
     	   
+    	   Individual robery = ontology.createIndividual(baseNs+lineSplit[0]+"Robbery", Robbery);
+    	   robery.addProperty(hasNumber, lineSplit[7]);
+    	   station.addProperty(hasCrime, robery);
+    	   
+    	   Individual burgluary = ontology.createIndividual(baseNs+lineSplit[0]+"Burglary", Burglary);
+    	   burgluary.addProperty(hasNumber, lineSplit[8]);
+    	   station.addProperty(hasCrime, burgluary);
+    	   
+    	   Individual theft = ontology.createIndividual(baseNs+lineSplit[0]+"Theft", Theft);
+    	   theft.addProperty(hasNumber, lineSplit[9]);
+    	   station.addProperty(hasCrime, theft);
+    	   
+    	   Individual fraud = ontology.createIndividual(baseNs+lineSplit[0]+"Fraud", Fraud);
+    	   fraud.addProperty(hasNumber, lineSplit[10]);
+    	   station.addProperty(hasCrime, fraud);
+    	   
+    	   Individual drugs = ontology.createIndividual(baseNs+lineSplit[0]+"Drugs", Drugs);
+    	   drugs.addProperty(hasNumber, lineSplit[11]);
+    	   station.addProperty(hasCrime, drugs);
+    	   
+    	   Individual weapons = ontology.createIndividual(baseNs+lineSplit[0]+"Weapons", Weapons);
+    	   weapons.addProperty(hasNumber, lineSplit[12]);
+    	   station.addProperty(hasCrime, weapons);
+    	   
+    	   Individual damagedproperty = ontology.createIndividual(baseNs+lineSplit[0]+"DamagedProperty", DamagedProperty);
+    	   damagedproperty.addProperty(hasNumber, lineSplit[13]);
+    	   station.addProperty(hasCrime, damagedproperty);
+    	   
+    	   Individual publicOffences = ontology.createIndividual(baseNs+lineSplit[0]+"PublicOrderOffences", PublicOrderOffences);
+    	   publicOffences.addProperty(hasNumber, lineSplit[14]);
+    	   station.addProperty(hasCrime, publicOffences);
+    	   
+    	   Individual governmentOffences = ontology.createIndividual(baseNs+lineSplit[0]+"GovernmentOffences", GovernmentOffences);
+    	   governmentOffences.addProperty(hasNumber, lineSplit[15]);
+    	   station.addProperty(hasCrime, governmentOffences);
     	   
        }
        
