@@ -62,6 +62,8 @@ public class CreateModel {
         
         OntClass LowSeverity = ontology.createClass(baseNs + "LowSeverity");
         OntClass HighSeverity = ontology.createClass(baseNs + "HighSeverity");
+        LowSeverity.addLabel("Low", "en");
+        HighSeverity.addLabel("High", "en");
         
         OntProperty  containedIn =  ontology.createObjectProperty(baseNs + "containedIn");
         OntProperty  contains =  ontology.createObjectProperty(baseNs + "contains");
@@ -92,10 +94,8 @@ public class CreateModel {
         
         hasSeverity.addDomain(Crime);
         hasSeverity.addRange(CrimeSeverity);
-        XSDDatatype d = XSDDatatype.XSDint;
         
         hasNumber.addDomain(Crime);
-//        hasNumber.addRange(d);
 
         contains.setInverseOf(containedIn);
         ontology.add(contains, RDF.type, OWL.TransitiveProperty);
