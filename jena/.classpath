@@ -18,7 +18,7 @@
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-arq-3.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-base-3.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-cmds-3.2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-core-3.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-core-3.2.0.jar" sourcepath="C:/Users/pasho/.m2/repository/org/apache/jena/jena-core/3.2.0/jena-core-3.2.0-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-iri-3.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-rdfconnection-3.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pasho/Downloads/lib/jena-shaded-guava-3.2.0.jar"/>

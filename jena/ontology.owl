@@ -28,6 +28,7 @@
     <rdfs:subClassOf>
       <owl:Class rdf:about="http://lab.Jena.Kdeg.ie/Ontology1#CrimeSeverity"/>
     </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">High</rdfs:label>
   </owl:Class>
   <owl:Class rdf:about="http://lab.Jena.Kdeg.ie/Ontology1#County"/>
   <owl:Class rdf:about="http://lab.Jena.Kdeg.ie/Ontology1#Assaults">
@@ -39,6 +40,7 @@
   </owl:Class>
   <owl:Class rdf:about="http://lab.Jena.Kdeg.ie/Ontology1#LowSeverity">
     <rdfs:subClassOf rdf:resource="http://lab.Jena.Kdeg.ie/Ontology1#CrimeSeverity"/>
+    <rdfs:label xml:lang="en">Low</rdfs:label>
   </owl:Class>
   <owl:Class rdf:about="http://lab.Jena.Kdeg.ie/Ontology1#Drugs">
     <rdfs:subClassOf rdf:resource="http://lab.Jena.Kdeg.ie/Ontology1#Crime"/>
