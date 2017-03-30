@@ -34,7 +34,7 @@ public class CreateModel {
 
     public static OntModel ontology;
 
-    public static void main(String args[]) throws IOException {
+    public static void createModel() throws IOException {
 
 	//ontologyName=args[0];
         baseNs = ontologiesBase + ontologyName + "#";
