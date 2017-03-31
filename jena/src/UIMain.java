@@ -37,23 +37,23 @@ public class UIMain {
 
 		while (!isExit) {
 			System.out.println("Please select one of the following options:");
-			System.out.println("Press [1] to get the crime with most occurences in a county");
-			System.out.println("Press [2] to get number of specific crime in a county");
+			System.out.println("Press [1] to get the crime with most occurrences in a specific Garda Station");
+			System.out.println("Press [2] to get the number of instances of a specific crime in a county");
 			System.out
 					.println("Press [3] to list the offences in a specific county above a threshold number of reports");
 			System.out.println(
-					"Press [4] to get a list of the most popular crime for a county and each of the border counties");
-			System.out.println("Press [5] to get a number of violet and non-violet crimes for a county");
+					"Press [4] to get the least frequently occurring crime for a county");
+			System.out.println("Press [5] to get the number of violent and non-violent crimes for a county");
 			System.out.println(
 					"Press [6] to list the offences in a specified county below a threshold number of reports");
-			System.out.println("Press [7] to get a county with max number of specified crime");
+			System.out.println("Press [7] to get the most common crime in a county");
 			System.out.println("Press [8] to get number of Garda stations in a county");
 			System.out.println("Press [9] to exit");
 			int option = reader.nextInt();
 			Scanner nextReader = new Scanner(System.in);
 			int threshold, queryNumber = 0;
 			String crime = "";
-			if (option != 1) {
+			if (option != 1 || option != 9) {
 				System.out.println("Type in the county name:");
 				inputCounty = nextReader.nextLine();
 				System.out.println();
@@ -121,8 +121,9 @@ public class UIMain {
 						+ "?county <http://lab.Jena.Kdeg.ie/Ontology1#contains> ?garda_st."
 						+ "?county <http://www.w3.org/2000/01/rdf-schema#label> " + "'" + inputCounty.toUpperCase()
 						+ "'" + "@en." + "?crime <http://lab.Jena.Kdeg.ie/Ontology1#hasNumber> ?n."
-						+ "?severity <http://lab.Jena.Kdeg.ie/Ontology1#hasSeverity> ?severity_label." + "}"
-						+ "GROUP BY ?severity_label";
+						+ "?crime <http://lab.Jena.Kdeg.ie/Ontology1#hasSeverity> ?severity."
+						+ "?severity <http://www.w3.org/2000/01/rdf-schema#label> ?severity_label." + "}"
+						+ "GROUP BY (?severity_label)";
 				getRoots(model, getRootsQuery, queryNumber);
 				break;
 			case 6:
@@ -136,6 +137,7 @@ public class UIMain {
 						+ "?county <http://lab.Jena.Kdeg.ie/Ontology1#contains> ?garda_st."
 						+ "?county <http://www.w3.org/2000/01/rdf-schema#label> " + "'" + inputCounty.toUpperCase()
 						+ "'" + "@en." + "?crime <http://lab.Jena.Kdeg.ie/Ontology1#hasNumber> ?n."
+					//	+ "SUM(<http://www.w3.org/2001/XMLSchema#integer>(?n))as ?agg."
 						+ "FILTER(<http://www.w3.org/2001/XMLSchema#integer>(?n) < " + threshold + ")" + "}";
 				traverseStart(model, null, getRootsQuery, queryNumber);
 				break;
@@ -253,59 +255,6 @@ public class UIMain {
 	}
 
 	public static void traverseStart(OntModel model, String entity, String rootQuery, int queryNumber) {
-		// if starting class available
-		if (entity != null) {
-			traverse(model, entity, new ArrayList<String>(), 0, queryNumber);
-		}
-		// get roots and traverse each root
-		else {
-			List<String> roots = getRoots(model, rootQuery, queryNumber);
-
-			for (int i = 0; i < roots.size(); i++) {
-				traverse(model, roots.get(i), new ArrayList<String>(), 0, queryNumber);
-			}
-		}
+		List<String> roots = getRoots(model, rootQuery, queryNumber);
 	}
-
-	public static void traverse(OntModel model, String entity, List<String> occurs, int depth, int queryNumber) {
-		if (entity == null)
-			return;
-
-		String queryString = "SELECT ?s WHERE { " + "?s <http://www.w3.org/2000/01/rdf-schema#subClassOf> <" + entity
-				+ "> . }";
-
-		Query query = QueryFactory.create(queryString);
-
-		if (!occurs.contains(entity)) {
-			// print depth times "\t" to retrieve an explorer tree like output
-			for (int i = 0; i < depth; i++) {
-				System.out.print("\t");
-			}
-			// print out the URI
-			if (entity.contains("http://lab.Jena.Kdeg.ie/Ontology1#")) {
-				entity = entity.replace("http://lab.Jena.Kdeg.ie/Ontology1#", "");
-			}
-			System.out.println(entity);
-
-			try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-				ResultSet results = qexec.execSelect();
-				while (results.hasNext()) {
-					QuerySolution soln = results.nextSolution();
-					RDFNode sub = soln.get("crime");
-
-					if (!sub.isURIResource())
-						continue;
-
-					String str = sub.toString();
-
-					occurs.add(entity);
-					traverse(model, str, occurs, depth + 1, queryNumber);
-					occurs.remove(entity);
-				}
-
-			}
-		}
-
-	}
-
 }
