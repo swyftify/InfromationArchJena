@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.awt.geom.*;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -27,6 +29,8 @@ public class CreateModel {
     public static String ontologiesBase = "http://lab.Jena.Kdeg.ie/";
 
     public static String relationshipBase = "http://relationships.lab.Jena.Kdeg.ie/";
+    
+    public static String geoHivePath = "C:\\Users\\Adam\\Documents\\Java\\Geohive\\geodb.ttl";
 
     public static String baseNs;
 
@@ -34,8 +38,10 @@ public class CreateModel {
 
     public static OntModel ontology;
 
-    public static void createModel() throws IOException {
+    public static void main(String[] args) throws IOException {
 
+    	ArrayList<CountyGeometry> geomList = GeoHiveParser.readDbAndParse(geoHivePath);
+    	
 	//ontologyName=args[0];
         baseNs = ontologiesBase + ontologyName + "#";
         ontology = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RULE_INF);
@@ -138,8 +144,18 @@ public class CreateModel {
     	   Individual station = ontology.createIndividual(baseNs+lineSplit[0],GardaStation);
     	   station.addLabel(lineSplit[0], "en");
     	   
+    	   // 2: 53
+    	   // 3: -6
     	   station.addProperty(hasLong, lineSplit[2]);
     	   station.addProperty(hasLat, lineSplit[3]);
+    	   
+    	   String countyInfo[] = findCounty(geomList, Double.parseDouble(lineSplit[3]), Double.parseDouble(lineSplit[2]));
+    	   //System.out.println(lineSplit[0] + " is in " + countyName);
+    	   Individual county = ontology.createIndividual(baseNs+countyInfo[0], County);
+    	   county.addLabel(countyInfo[0], "en");
+    	   county.addProperty(contains, station);
+    	   county.addProperty(coords, countyInfo[1]);
+    	   //System.out.println("long: " + lineSplit[2]);
     	   
     	   Individual cr = ontology.createIndividual(baseNs+lineSplit[0]+"Assaults", Assaults);
     	   cr.addLabel("Attempts or threats to murder, assaults, harassments and related offences", "en");
@@ -224,6 +240,18 @@ public class CreateModel {
 
     }
 
+    public static String[] findCounty(ArrayList<CountyGeometry> geoms, double x, double y){
+    	for(int i = 0; i < geoms.size(); i++){
+    		if(geoms.get(i).geom.contains(x, y)){
+    			String[] res = new String[2];
+    			res[0] = geoms.get(i).name;
+    			res[1]=geoms.get(i).wkt;
+    			return res;
+    		}
+    	}
+    	return null;
+    }
+    
     public static void writeToFile(String filename)
             throws FileNotFoundException {
         try {
